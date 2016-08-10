@@ -20,7 +20,7 @@ def make_fair_dice(sides):
     assert type(sides) == int and sides >= 1, 'Illegal value for sides'
     def dice():
         result = randint(1,sides)
-        print('rolling: ' + str(result))
+        #print('rolling: ' + str(result))
         return result
     return dice
 
