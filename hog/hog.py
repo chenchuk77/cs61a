@@ -2,6 +2,7 @@
 
 from dice import four_sided, six_sided, make_test_dice
 from ucb import main, trace, log_current_line, interact
+from helper_functions import *
 
 GOAL_SCORE = 100  # The goal of Hog is to score 100 points.
 
@@ -32,10 +33,7 @@ def roll_dice(num_rolls, dice=six_sided):
         num_rolls -= 1
     # python trinary
     return 0 if (is_fail) else outcomes_sum
-
-
     # END Question 1
-
 
 def take_turn(num_rolls, opponent_score, dice=six_sided):
     """Simulate a turn rolling NUM_ROLLS dice, which may be 0 (Free Bacon).
@@ -49,7 +47,20 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     assert num_rolls <= 10, 'Cannot roll more than 10 dice.'
     assert opponent_score < 100, 'The game should be over.'
     # BEGIN Question 2
-    "*** REPLACE THIS LINE ***"
+    score = 0
+    # implements Free Bacon: A player who chooses to roll zero dice
+    # scores one more than the largest digit in the opponent's total score
+    if num_rolls == 0:
+        score = get_max_digit(opponent_score) + 1
+    else:
+        score = roll_dice(num_rolls)
+
+    # implements Hogtimus Prime: if score is a prime number,
+    # then score is the next prime number
+    # notes : also applied to Free Bacon rule.
+    if is_prime(score):
+        return next_prime(score)
+
     # END Question 2
 
 
@@ -58,7 +69,10 @@ def select_dice(score, opponent_score):
     multiple of 7, in which case select four-sided dice (Hog wild).
     """
     # BEGIN Question 3
-    "*** REPLACE THIS LINE ***"
+    if (score + opponent_score) % 7 == 0:
+        return four_sided
+    else:
+        return six_sided
     # END Question 3
 
 
