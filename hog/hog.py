@@ -81,7 +81,14 @@ def is_swap(score0, score1):
     versions of each other, such as 19 and 91.
     """
     # BEGIN Question 4
-    "*** REPLACE THIS LINE ***"
+    # get rid of the hundreds ( if exists ), ie 109 will become 09
+    score0 %= 100
+    score1 %= 100
+    # checl if last 2 digits are swapable (ie 19 and 92, 80 and 8)
+    if (score0 % 10 == score1 // 10) and (score1 % 10 == score0 // 10):
+        return True
+    else:
+        return False
     # END Question 4
 
 
