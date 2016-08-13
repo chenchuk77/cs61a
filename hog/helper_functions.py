@@ -31,3 +31,4 @@ def get_max_digit(number):
     units = number % 10
     tens = number // 10
     return units if units >= tens else tens
+

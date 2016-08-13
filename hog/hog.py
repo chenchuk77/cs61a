@@ -5,12 +5,11 @@ from ucb import main, trace, log_current_line, interact
 from helper_functions import *
 
 GOAL_SCORE = 100  # The goal of Hog is to score 100 points.
-
+DEFAULT_NUM_ROLLS = 2
 
 ######################
 # Phase 1: Simulator #
 ######################
-
 
 def roll_dice(num_rolls, dice=six_sided):
     """Simulate rolling the DICE exactly NUM_ROLLS times. Return the sum of
@@ -20,6 +19,7 @@ def roll_dice(num_rolls, dice=six_sided):
     assert type(num_rolls) == int, 'num_rolls must be an integer.'
     assert num_rolls > 0, 'Must roll at least once.'
     # BEGIN Question 1
+    print ('\trolling: ' + str(num_rolls) + ' dices')
     outcomes_sum = 0
     #dice = make_test_dice(1, 2, 3, 3, 1)
     is_fail = False
@@ -32,7 +32,12 @@ def roll_dice(num_rolls, dice=six_sided):
             outcomes_sum += outcome
         num_rolls -= 1
     # python trinary
-    return 0 if (is_fail) else outcomes_sum
+    if is_fail:
+        print ('\tPig Out !!! score: 0')
+        return 0
+    else:
+        print ('\tscore: '+str(outcomes_sum))
+        return outcomes_sum
     # END Question 1
 
 def take_turn(num_rolls, opponent_score, dice=six_sided):
@@ -53,13 +58,15 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     if num_rolls == 0:
         score = get_max_digit(opponent_score) + 1
     else:
-        score = roll_dice(num_rolls)
+        score = roll_dice(num_rolls, dice)
 
     # implements Hogtimus Prime: if score is a prime number,
     # then score is the next prime number
     # notes : also applied to Free Bacon rule.
     if is_prime(score):
-        return next_prime(score)
+        score = next_prime(score)
+        print ('*** Hogtimus prime ! upgrading to next prime number, score = '+str(score)+' ***')
+    return score
 
     # END Question 2
 
@@ -69,7 +76,13 @@ def select_dice(score, opponent_score):
     multiple of 7, in which case select four-sided dice (Hog wild).
     """
     # BEGIN Question 3
+
+    # for start
+    if score + opponent_score == 0:
+        return six_sided
+    # for rest
     if (score + opponent_score) % 7 == 0:
+        print ('*** Hog wild (sum of scores are multiply of 7, rolling 4-sided dice) ***')
         return four_sided
     else:
         return six_sided
@@ -118,9 +131,54 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
     """
     player = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
     # BEGIN Question 5
-    "*** REPLACE THIS LINE ***"
+    print ("start playing ...")
+    while True:
+        num_rolls = DEFAULT_NUM_ROLLS
+        print('p0 taking turn, starting with '+str(score0)+ ':')
+        dice = select_dice(score0, score1)
+        if dice == four_sided:
+            print ('using 4 sided dice')
+        turn_score = take_turn(num_rolls, score1, dice)
+        #Piggy Back
+        if turn_score == 0:
+            print ('*** Piggy Back: adding '+str(num_rolls)+ ' points to opponent p1 ! ***')
+            score1 += num_rolls
+        score0 += turn_score
+        if is_swap(score0,score1):
+            print('*** Swine Swap, swapping scores ***')
+            score_temp = score0
+            score0 = score1
+            score1 = score_temp
+        print('\t\t\t' + '\033[1m' + '*** score0 = ' +str(score0)+ '\033[0m')
+        if score0 >= goal:
+            break
+
+        num_rolls = DEFAULT_NUM_ROLLS
+        print('p1 taking turn, starting with '+str(score1)+ ':')
+        dice = select_dice(score0, score1)
+        if dice == four_sided:
+            print ('using 4 sided dice')
+        turn_score = take_turn(num_rolls, score0, dice)
+        #Piggy Back
+        if turn_score == 0:
+            print ('*** Piggy Back: adding '+str(num_rolls)+ ' points to opponent p0 ! ***')
+            score0 += num_rolls
+        score1 += turn_score
+        if is_swap(score0,score1):
+            print('*** Swine Swap, swapping scores ***')
+            score_temp = score0
+            score0 = score1
+            score1 = score_temp
+        print('\t\t\t' + '\033[1m' + '*** score1 = ' +str(score1)+ '\033[0m')
+        if score1 >= goal:
+            break
+        print ('------------------------------ TURN ENDS ----------------------------------')
+
     # END Question 5
     return score0, score1
+
+
+
 
 
 #######################
